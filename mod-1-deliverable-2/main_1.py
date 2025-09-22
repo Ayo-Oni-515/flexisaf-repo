@@ -1,119 +1,184 @@
 from random import randrange
+import time
+import sys
+import copy
+
+grid_reset: list = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+grid: list = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+valid_moves: list = list(range(1, 10))
+
+# This list stores the set of numbers removed from the grid
+used = []
 
 
-board = [[1, 2, 3], [4, "X", 6], [7, 8, 9]]
-
-# This list stores the set of numbers removed from the board list
-used = [5]
-
-
-def display_board(board: list) -> None:
+def display_grid() -> None:
     """
     Dispalys the grid on the console
 
     Args:
-        board (list): represents the positions on the grid
+        grid (list): represents the positions on the grid
 
     Returns:
         None
     """
+    global grid
+
+    time.sleep(0.5)
+
     print(f"""
        |       |
-   {board[0][0]}   |   {board[0][1]}   |   {board[0][2]}
+   {grid[0][0]}   |   {grid[0][1]}   |   {grid[0][2]}
        |       |
 +------|-------|-------+
        |       |
-   {board[1][0]}   |   {board[1][1]}   |   {board[1][2]}
+   {grid[1][0]}   |   {grid[1][1]}   |   {grid[1][2]}
        |       |
 +------|-------|-------+
        |       |
-   {board[2][0]}   |   {board[2][1]}   |   {board[2][2]}
+   {grid[2][0]}   |   {grid[2][1]}   |   {grid[2][2]}
        |       |
     """)
 
 
-def enter_move(board: list) -> None:
+def enter_move() -> None:
     """
-    1. accepts the board's current status
+    1. accepts the grid's current status
     2. asks the user about their move
-    3. checks the input, and updates the board
+    3. checks the input, and updates the grid
     according to the user's decision.
 
     Args:
-        board (list): represents the positions on the grid
+        grid (list): represents the positions on the grid
 
     Returns:
         None
     """
-    user_input = int(input("Enter your move: "))
-    for i in range(len(board)):
+    global grid, used
+
+    while True:
+        try:
+            user_input = int(input("Enter your move: "))
+            if ((user_input not in valid_moves) or
+                    (user_input in used)):
+                print("\n\t>>>Error: Invalid option!\n")
+                continue
+            break
+        except Exception:
+            print("\n\t>>>Error: Invalid option!\n")
+
+    for i in range(len(grid)):
         for j in range(3):
-            if board[i][j] == user_input:
+            if grid[i][j] == user_input:
                 used.append(user_input)
-                board[i][j] = "O"
-                break
+                grid[i][j] = "O"
 
 
-def victory_for(board: list, sign: str) -> bool:
+def victory_for(sign: str) -> bool:
     """Determines game's victor
 
     Args:
-        board (list): represents the positions on the grid
+        grid (list): represents the positions on the grid
         sign (str): possible game optons
 
     Returns:
         bool
     """
-    for a in range(len(board)):
-        if sign == board[a][0] and sign == board[a][1] and sign == board[a][2]:
+    global grid
+
+    for a in range(len(grid)):
+        if sign == grid[a][0] and sign == grid[a][1] and sign == grid[a][2]:
             return True
-        elif sign == (
-                board[0][a] and sign == board[1][a] and sign == board[2][a]):
+        elif (sign == grid[0][a] and
+              sign == grid[1][a] and sign == grid[2][a]):
             return True
-    if sign == board[0][0] and sign == board[1][1] and sign == board[2][2]:
+    if sign == grid[0][0] and sign == grid[1][1] and sign == grid[2][2]:
         return True
-    elif sign == board[0][2] and sign == board[1][1] and sign == board[2][0]:
+    elif sign == grid[0][2] and sign == grid[1][1] and sign == grid[2][0]:
         return True
     return False
 
 
-def draw_move(board: list):
-    """The function draws the computer's move and updates the board.
+def draw_move():
+    """Draws the computer's move and updates the grid.
 
     Args:
-        board (list): represents the positions on the grid
+        grid (list): represents the positions on the grid
 
     Retunrs:
         None
     """
+    global grid
+
     computer_input = randrange(1, 10)
+
     while computer_input in used:
         computer_input = randrange(1, 10)
-        if len(used) == 9:
-            break
-    for i in range(len(board)):
+
+    for i in range(len(grid)):
         for j in range(3):
-            if board[i][j] == computer_input:
+            if grid[i][j] == computer_input:
                 used.append(computer_input)
-                board[i][j] = "X"
-                break
+                grid[i][j] = "X"
 
 
-move = 1
-display_board(board)
-while move < 5:
-    enter_move(board)
-    display_board(board)
-    if victory_for(board, "O"):
-        print("You Won.")
-        display_board(board)
-        break
-    draw_move(board)
-    if victory_for(board, "X"):
-        print("Computer Won.")
-        display_board(board)
-        break
-    display_board(board)
-    move += 1
-if not victory_for(board, "O") and not victory_for(board, "X"):
-    print("Game Inconclusive")
+def reset_grid():
+    global grid, used
+
+    grid = copy.deepcopy(grid_reset)
+    used.clear()
+
+
+def game_play() -> None:
+    global grid, used
+
+    display_grid()
+    while True:
+        if len(used) == 9:
+            print("Game Inconclusive")
+            reset_grid()
+            break
+
+        draw_move()
+        display_grid()
+        if victory_for(sign="X"):
+            print("Computer Won!")
+            reset_grid()
+            break
+
+        if len(used) == 9:
+            print("Game Inconclusive")
+            reset_grid()
+            break
+
+        enter_move()
+        display_grid()
+        if victory_for(sign="O"):
+            print("You Won!")
+            reset_grid()
+            break
+
+
+if __name__ == "__main__":
+    print("""
+Welcome to my Tic-Tac-Toe program!
+
+Instructions:
+    1. Enter value corresponding to chosen position.
+    2. Type 'n' to quit when prompted for a new game.
+    """)
+
+    while True:
+        game_play()
+
+        while True:
+            try:
+                new_game: str = input("\nNew game? 'y' or 'n': ")
+                if new_game.lower() == "n":
+                    sys.exit(0)
+                elif new_game.lower() == "y":
+                    reset_grid()
+                    break
+                else:
+                    raise Exception
+            except Exception:
+                print("\n\t>>>Error: Invalid option!")
