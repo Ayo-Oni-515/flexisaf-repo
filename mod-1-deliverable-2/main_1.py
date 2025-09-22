@@ -8,8 +8,15 @@ used = [5]
 
 
 def display_board(board: list) -> None:
-    # The function accepts one parameter containing the board's current status
-    # and prints it out to the console.
+    """
+    Dispalys the grid on the console
+
+    Args:
+        board (list): represents the positions on the grid
+
+    Returns:
+        None
+    """
     print(f"""
        |       |
    {board[0][0]}   |   {board[0][1]}   |   {board[0][2]}
@@ -26,9 +33,18 @@ def display_board(board: list) -> None:
 
 
 def enter_move(board: list) -> None:
-    # The function accepts the board's current status,
-    # asks the user about their move,
-    # checks the input, and updates the board according to the user's decision.
+    """
+    1. accepts the board's current status
+    2. asks the user about their move
+    3. checks the input, and updates the board
+    according to the user's decision.
+
+    Args:
+        board (list): represents the positions on the grid
+
+    Returns:
+        None
+    """
     user_input = int(input("Enter your move: "))
     for i in range(len(board)):
         for j in range(3):
@@ -38,27 +54,16 @@ def enter_move(board: list) -> None:
                 break
 
 
-# def make_list_of_free_fields(board):
-#     # The function browses the board and builds
-#     # a list of all the free squares;
-#     # the list consists of tuples, while each tuple
-#     # is a pair of row and column numbers.
-#     used = []
-#     free = []
-#     for i in range(len(board)):
-#         for j in range(3):
-#             if board[i][j] == "X" or board[i][j] == "O":
-#                 new = (i, j)
-#                 used.append(new)
-#             else:
-#                 new = (i, j)
-#                 free.append(new)
-#     return used
+def victory_for(board: list, sign: str) -> bool:
+    """Determines game's victor
 
+    Args:
+        board (list): represents the positions on the grid
+        sign (str): possible game optons
 
-def victory_for(board, sign):
-    # The function analyzes the board's status in order to check if
-    # the player using 'O's or 'X's has won the game
+    Returns:
+        bool
+    """
     for a in range(len(board)):
         if sign == board[a][0] and sign == board[a][1] and sign == board[a][2]:
             return True
@@ -72,8 +77,15 @@ def victory_for(board, sign):
     return False
 
 
-def draw_move(board):
-    # The function draws the computer's move and updates the board.
+def draw_move(board: list):
+    """The function draws the computer's move and updates the board.
+
+    Args:
+        board (list): represents the positions on the grid
+
+    Retunrs:
+        None
+    """
     computer_input = randrange(1, 10)
     while computer_input in used:
         computer_input = randrange(1, 10)
